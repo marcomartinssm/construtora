@@ -198,12 +198,27 @@
     z-index: 999; align-items: center; justify-content: center;
   }
   .lightbox.active { display: flex; }
-  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 4px; }
+  .lightbox img { max-width: 88vw; max-height: 85vh; object-fit: contain; border-radius: 4px; user-select: none; }
   .lightbox-close {
     position: absolute; top: 24px; right: 24px;
     background: rgba(255,255,255,.15); border: none; border-radius: 50%;
     width: 44px; height: 44px; cursor: pointer; color: white; font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center; justify-content: center; transition: background .2s;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,.3); }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,.15); border: none; border-radius: 50%;
+    width: 52px; height: 52px; cursor: pointer; color: white; font-size: 22px;
+    display: flex; align-items: center; justify-content: center; transition: background .2s;
+    z-index: 2;
+  }
+  .lightbox-nav:hover { background: rgba(255,255,255,.3); }
+  .lightbox-prev { left: 24px; }
+  .lightbox-next { right: 24px; }
+  .lightbox-counter {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,.6); font-size: 12px; font-weight: 600; letter-spacing: 1px;
   }
 
   /* FOOTER */
@@ -376,9 +391,12 @@
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+<div class="lightbox" id="lightbox">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav lightbox-prev" onclick="changePhoto(-1)">&#8592;</button>
   <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-nav lightbox-next" onclick="changePhoto(1)">&#8594;</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
 </div>
 
 <footer>
@@ -389,16 +407,51 @@
 </footer>
 
 <script>
+  let galleryImgs = [];
+  let currentIdx = 0;
+
+  // Collect all gallery images on load
+  window.addEventListener('DOMContentLoaded', () => {
+    galleryImgs = Array.from(document.querySelectorAll('.gallery-grid img')).map(i => i.src);
+  });
+
   function openLightbox(src) {
-    document.getElementById('lightbox-img').src = src;
+    currentIdx = galleryImgs.indexOf(src);
+    if (currentIdx === -1) currentIdx = 0;
+    showPhoto(currentIdx);
     document.getElementById('lightbox').classList.add('active');
     document.body.style.overflow = 'hidden';
   }
+
+  function showPhoto(idx) {
+    document.getElementById('lightbox-img').src = galleryImgs[idx];
+    document.getElementById('lightbox-counter').textContent = (idx + 1) + ' / ' + galleryImgs.length;
+    // Hide nav arrows if only 1 photo
+    document.querySelector('.lightbox-prev').style.display = galleryImgs.length > 1 ? 'flex' : 'none';
+    document.querySelector('.lightbox-next').style.display = galleryImgs.length > 1 ? 'flex' : 'none';
+  }
+
+  function changePhoto(dir) {
+    currentIdx = (currentIdx + dir + galleryImgs.length) % galleryImgs.length;
+    showPhoto(currentIdx);
+  }
+
   function closeLightbox() {
     document.getElementById('lightbox').classList.remove('active');
     document.body.style.overflow = '';
   }
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('active')) return;
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowRight')  changePhoto(1);
+    if (e.key === 'ArrowLeft')   changePhoto(-1);
+  });
+
+  // Click outside image to close
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
 </script>
 </body>
 </html>
