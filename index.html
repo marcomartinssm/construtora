@@ -222,7 +222,10 @@
     border: 1px solid var(--border);
     transition: transform .3s, box-shadow .3s;
     cursor: pointer;
-    text-decoration: none; display: block;
+    text-decoration: none !important;
+    display: flex !important;
+    flex-direction: column;
+    color: inherit !important;
   }
   .project-card:hover {
     transform: translateY(-6px);
