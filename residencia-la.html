@@ -262,6 +262,15 @@
     footer { padding: 24px 16px; }
     .footer-inner { flex-direction: column; gap: 8px; }
   }
+
+  /* ── topo compacto no celular ── */
+  @media (max-width: 640px) {
+    nav { padding: 0 14px !important; gap: 10px; }
+    .nav-logo img { height: 30px !important; }
+    .nav-back { font-size: 0 !important; gap: 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
+    .nav-back::after { content: 'Voltar'; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+    .nav-cta { padding: 9px 12px !important; font-size: 10px !important; letter-spacing: .4px !important; white-space: nowrap; }
+  }
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-175TYJ9B3N"></script>
